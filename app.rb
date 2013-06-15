@@ -30,15 +30,21 @@ def redirect_uri
 end
 
 def access_token
-  OAuth2::AccessToken.new(client, session[:access_token], :refresh_token => session[:refresh_token])
+  OAuth2::AccessToken.new(
+    client,
+    session[:access_token],
+    :refresh_token => session[:refresh_token])
 end
 
 get "/" do
-  if !session[:access_token].nil?
-    erb :index
-  else
-    @moves_authorize_uri = client.auth_code.authorize_url(:redirect_uri => redirect_uri, :scope => 'activity location')
+  if session[:access_token].nil?
+    @moves_authorize_uri = client.auth_code.authorize_url(
+      :redirect_uri => redirect_uri,
+      :scope => 'activity location')
     erb :signin
+  else
+    @json = access_token.get("/api/v1/user/storyline/daily/#{Date.today}?trackPoints=true").parsed
+    erb :index
   end
 end
 
@@ -48,18 +54,9 @@ get '/moves/logout' do
 end
 
 get '/auth/moves/callback' do
-  new_token = client.auth_code.get_token(params[:code], :redirect_uri => redirect_uri)
+  new_token = client.auth_code.get_token(
+    params[:code],
+    :redirect_uri => redirect_uri)
   session[:access_token] = new_token.token
   redirect '/'
 end
-
-get '/moves/profile' do
-  @json = access_token.get("/api/v1/user/profile").parsed
-  erb :profile, :layout => !request.xhr?
-end
-
-get '/moves/recent' do
-  @json = access_token.get("/api/v1/user/storyline/daily/#{Date.today}").parsed
-  erb :recent, :layout => !request.xhr?
-end
-
