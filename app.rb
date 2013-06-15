@@ -36,14 +36,15 @@ def access_token
     :refresh_token => session[:refresh_token])
 end
 
-get "/" do
+get "/.?:date?" do
   if session[:access_token].nil?
     @moves_authorize_uri = client.auth_code.authorize_url(
       :redirect_uri => redirect_uri,
       :scope => 'activity location')
     erb :signin
   else
-    @json = access_token.get("/api/v1/user/storyline/daily/#{Date.today}?trackPoints=true").parsed
+    storyline_day = params['date'] || Date.today
+    @json = access_token.get("/api/v1/user/storyline/daily/#{storyline_day}?trackPoints=true").parsed
     erb :index
   end
 end
