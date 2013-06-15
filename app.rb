@@ -22,6 +22,17 @@ def client
     :token_url => 'https://api.moves-app.com/oauth/v1/access_token')
 end
 
+def redirect_uri
+  uri = URI.parse(request.url)
+  uri.path = '/auth/moves/callback'
+  uri.query = nil
+  uri.to_s
+end
+
+def access_token
+  OAuth2::AccessToken.new(client, session[:access_token], :refresh_token => session[:refresh_token])
+end
+
 get "/" do
   if !session[:access_token].nil?
     erb :index
@@ -40,17 +51,6 @@ get '/auth/moves/callback' do
   new_token = client.auth_code.get_token(params[:code], :redirect_uri => redirect_uri)
   session[:access_token] = new_token.token
   redirect '/'
-end
-
-def redirect_uri
-  uri = URI.parse(request.url)
-  uri.path = '/auth/moves/callback'
-  uri.query = nil
-  uri.to_s
-end
-
-def access_token
-  OAuth2::AccessToken.new(client, session[:access_token], :refresh_token => session[:refresh_token])
 end
 
 get '/moves/profile' do
