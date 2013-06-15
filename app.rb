@@ -18,7 +18,7 @@ def client
     ENV['MOVES_CLIENT_ID'],
     ENV['MOVES_CLIENT_SECRET'],
     :site => 'https://api.moves-app.com',
-    :authorize_url => "https://api.moves-app.com/oauth/v1/authorize?response_type=code&client_id=#{ENV['MOVES_CLIENT_ID']}&scope=both",
+    :authorize_url => "moves://app/authorize",
     :token_url => 'https://api.moves-app.com/oauth/v1/access_token')
 end
 
@@ -38,7 +38,7 @@ end
 
 get '/auth/moves/callback' do
   new_token = client.auth_code.get_token(params[:code], :redirect_uri => redirect_uri)
-  session[:access_token]  = new_token.token
+  session[:access_token] = new_token.token
   redirect '/'
 end
 
@@ -59,7 +59,7 @@ get '/moves/profile' do
 end
 
 get '/moves/recent' do
-  @json = access_token.get("/api/v1/user/storyline/daily?#{Date.today}&trackPoints=true").parsed
+  @json = access_token.get("/api/v1/user/places/daily?#{Date.today}").parsed
   erb :recent, :layout => !request.xhr?
 end
 
