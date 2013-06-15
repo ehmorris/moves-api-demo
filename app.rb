@@ -55,15 +55,11 @@ end
 
 get '/moves/profile' do
   @json = access_token.get("/api/v1/user/profile").parsed
-
   erb :profile, :layout => !request.xhr?
 end
 
 get '/moves/recent' do
-  from = (Date.today - 1).strftime("%Y%m%d")
-  to = Date.today.strftime("%Y%m%d")
-  @json = access_token.get("/api/v1/user/storyline/daily?from=#{from}&to=#{to}?trackPoints=true").parsed
-
+  @json = access_token.get("/api/v1/user/storyline/daily?#{Date.today}?trackPoints=true").parsed
   erb :recent, :layout => !request.xhr?
 end
 
