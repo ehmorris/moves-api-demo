@@ -18,7 +18,7 @@ def client
     ENV['MOVES_CLIENT_ID'],
     ENV['MOVES_CLIENT_SECRET'],
     :site => 'https://api.moves-app.com',
-    :authorize_url => 'moves://app/authorize',
+    :authorize_url => "https://api.moves-app.com/oauth/v1/authorize?response_type=code&client_id=#{ENV['MOVES_CLIENT_ID']}&scope=both",
     :token_url => 'https://api.moves-app.com/oauth/v1/access_token')
 end
 
@@ -32,7 +32,7 @@ get "/" do
 end
 
 get '/moves/logout' do
-  session[:access_token]  = nil
+  session[:access_token] = nil
   redirect '/'
 end
 
@@ -59,7 +59,7 @@ get '/moves/profile' do
 end
 
 get '/moves/recent' do
-  @json = access_token.get("/api/v1/user/storyline/daily?#{Date.today}?trackPoints=true").parsed
+  @json = access_token.get("/api/v1/user/storyline/daily?#{Date.today}&trackPoints=true").parsed
   erb :recent, :layout => !request.xhr?
 end
 
