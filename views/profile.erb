@@ -1,13 +1,9 @@
-<div data-role="page">
-	<div data-role="header"><h1>Moves API Demo - User Profile</h1></div>
-	<div data-role="content">
-		<ul data-role="listview" data-inset="true">
-
-		<li>
-			User ID <p class="ui-li-aside"><%= @json["userId"] %></p>
-		</li>
-		<li>
-			Date joined <p class="ui-li-aside"><%= format_date(@json["profile"]["firstDate"]) %></p>
-		</li>
-	</div>
-</div>
+<header>
+  <h1>Moves &mdash; User Profile</h1>
+</header>
+<section>
+  <ul>
+    <li>User ID <%= @json["userId"] %></li>
+    <li>Date joined <%= format_date(@json["profile"]["firstDate"]) %></li>
+  </ul>
+</section>
