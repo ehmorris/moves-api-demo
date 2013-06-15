@@ -44,7 +44,12 @@ get "/.?:date?" do
     erb :signin
   else
     storyline_day = params['date'] || Date.today
-    @json = access_token.get("/api/v1/user/storyline/daily/#{storyline_day}?trackPoints=true").parsed
+    json = access_token.get("/api/v1/user/storyline/daily/#{storyline_day}?trackPoints=true").parsed
+    @locations = json.map { |day|
+      unless day['segments'].nil?
+        day['segments'].find_all{ |s| s['type'] == 'place'}
+      end
+    }
     erb :index
   end
 end
