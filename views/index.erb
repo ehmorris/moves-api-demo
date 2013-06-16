@@ -1,5 +1,7 @@
-<% for i in 0..6 %>
-  <a href="/<%= Date.today - i %>"><%= (Date.today - i).strftime('%A') %></a>
-<% end %>
+<p>
+  <% for i in 0..6 %>
+    <a href="/<%= Date.today - i %>"><%= (Date.today - i).strftime('%A') %></a>
+  <% end %>
+</p>
 
-<%= @locations %>
+<%= @geojson %>

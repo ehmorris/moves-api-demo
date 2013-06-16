@@ -44,12 +44,28 @@ get "/.?:date?" do
     erb :signin
   else
     storyline_day = params['date'] || Date.today
-    json = access_token.get("/api/v1/user/storyline/daily/#{storyline_day}?trackPoints=true").parsed
-    @locations = json.map { |day|
-      unless day['segments'].nil?
-        day['segments'].find_all{ |s| s['type'] == 'place'}
+    storyline_json = access_token.get("/api/v1/user/storyline/daily/#{storyline_day}?trackPoints=true").parsed
+
+    @geojson = []
+
+    storyline_json.each do |date|
+      date['segments'].each do |segment|
+        if segment['type'] == 'place'
+          lat = segment['place']['location']['lat']
+          lon = segment['place']['location']['lon']
+          @geojson.push("{'type': 'point', 'coordinates': [#{lat}, #{lon}]}")
+        elsif segment['type'] == 'move'
+          segment['activities'].each do |activity|
+            activity['trackPoints'].each do |trackpoint|
+              lat = trackpoint['lat']
+              lon = trackpoint['lon']
+              @geojson.push("{'type': 'point', 'coordinates': [#{lat}, #{lon}]}")
+            end
+          end
+        end
       end
-    }
+    end
+
     erb :index
   end
 end
