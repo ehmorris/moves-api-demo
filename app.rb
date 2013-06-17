@@ -7,12 +7,6 @@ require 'date'
 enable :sessions
 set    :session_secret, 'super secret'
 
-helpers do
-  def format_date(date_str)
-    Date.parse(date_str).strftime("%B %d, %Y")
-  end
-end
-
 def client
   OAuth2::Client.new(
     ENV['MOVES_CLIENT_ID'],
