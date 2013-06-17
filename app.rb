@@ -59,10 +59,18 @@ get "/.?:date?" do
           @geojson.push({'type' => 'Point', 'coordinates' => [lon, lat]})
         elsif segment['type'] == 'move'
           segment['activities'].each do |activity|
-            activity['trackPoints'].each do |trackpoint|
-              lon = trackpoint['lon']
-              lat = trackpoint['lat']
-              @geojson.push({'type' => 'Point', 'coordinates' => [lon, lat]})
+            activity['trackPoints'].each_with_index do |trackpoint, i|
+              if activity['trackPoints'][i + 1]
+                beginning_lon = trackpoint['lon']
+                beginning_lat = trackpoint['lat']
+                end_lon = activity['trackPoints'][i + 1]['lon']
+                end_lat = activity['trackPoints'][i + 1]['lat']
+                @geojson.push(
+                  {'type' => 'LineString',
+                   'coordinates' => [
+                     [beginning_lon, beginning_lat],
+                     [end_lon, end_lat]]})
+              end
             end
           end
         end
